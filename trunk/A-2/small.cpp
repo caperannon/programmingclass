@@ -1,130 +1,100 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <string>
 using namespace std;
 static const int RANDOM_MIN = 0;
 static const int RANDOM_MAX = 101;
 static int cNum, pNum, randMin, randMax, guesses;
-static char pChoice, cont;
+static char pChoice;
 static bool done;
-void player();
-void computer();
-void reset();
 int main()
 {
-	reset();
-	cout << "Welcome to guess a number!" << endl;
-	do
-	{
-		cout << "\nWho would you like to choose a number?\nComputer - c\nPlayer - p\n" << "Your choice: ";
+	cout << "Welcome to guess my number!" << endl;
+	srand(time(0));
+	do {
+		done = false;
+		guesses = 0;
+		pChoice = 1;
+		cNum = 0;
+		pNum = 1;
+		randMin = RANDOM_MIN;
+		randMax = RANDOM_MAX;
+		cout << "\nWho would you like to choose a number?\nComputer - c\nPlayer - p\nQuit - q\nYour choice: ";
 		cin >> pChoice;
-		if((pChoice == 'p') || (pChoice == 'P'))
-		{
-			reset();
-			player();
+		if((pChoice == 'p') || (pChoice == 'P')) {
+			do {
+				cout << "Please enter your number: ";
+				cin >> pNum;
+				if((pNum <= randMin) || (pNum >= randMax)) {
+					cout << "Please enter a valid number between " << RANDOM_MIN + 1 << " and " << RANDOM_MAX << "." << endl;
+				}
+			} while((pNum <= RANDOM_MIN) || (pNum >= RANDOM_MAX));
+			do {
+				if(randMax - randMin == 2) {
+					cNum = randMin + 1;
+				}
+				else {
+					do {
+						cNum = rand() % (randMax - randMin) + randMin + 1;
+					} while((cNum <= randMin) || (cNum >= randMax));
+				}
+				guesses++;
+				if(pNum == cNum) {
+					cout << "The computers guess is: " << cNum << "\nThe computer guessed it in " << guesses << " guesses!" << endl;
+				}
+				else {
+					cout << "The computers guess is: " << cNum << "\nWas the computers guess too high or low? (h/l)\n";
+					do {
+						cout << "Your Choice: ";
+						cin >> pChoice;
+					} while((pChoice != 'h') && (pChoice != 'H') && (pChoice != 'l') && (pChoice != 'L') && (pChoice != 'q') && (pChoice != 'Q'));
+					if((pChoice == 'h') || (pChoice == 'H')) {
+						randMax = cNum;
+					}
+					else if((pChoice == 'l') || (pChoice == 'L')) {
+						randMin = cNum;
+					}
+					else if((pChoice == 'q') || (pChoice == 'Q')) {
+						cNum = pNum;
+					}
+				}
+			} while(cNum != pNum);
+			cout << "Would you like to play again? (y/n)\n" << "Your choice: ";
+			cin >> pChoice;
+			if((pChoice == 'n') || (pChoice == 'N')) {
+				done = true;
+			}
 		}
-		else if((pChoice == 'c') || (pChoice == 'C'))
-		{
-			reset();
-			computer();
+		else if((pChoice == 'c') || (pChoice == 'C')) {
+			cNum = (rand() % (randMax - randMin)) + randMin + 1;
+			cout << "The computer has chosen a number..." << endl;
+			do {
+				do {
+					cout << "Please enter your number: ";
+					cin >> pNum;
+				} while((pNum <= RANDOM_MIN) || (pNum >= RANDOM_MAX));
+				guesses++;
+				if(pNum > cNum) {
+					cout << "Your guess was too high!" << endl;
+				}
+				else if(pNum < cNum) {
+					cout << "Your guess was too low!" << endl;
+				}
+				else if(pNum == cNum) {
+					cout << "You guessed it in " << guesses << " guesses!" << endl;
+				}
+			} while(pNum != cNum);
+			cout << "Would you like to play again? (y/n)\n" << "Your choice: ";
+			cin >> pChoice;
+			if((pChoice == 'n') || (pChoice == 'N')) {
+				done = true;
+			}
 		}
-		else if((pChoice == 'q') || (pChoice == 'Q'))
-		{
+		else if((pChoice == 'q') || (pChoice == 'Q')) {
 			done = true;
 		}
-	}
-	while(!done);
+	} while(!done);
 	cout << "Exiting..." << endl;
 	return 0;
-}
-void player()
-{
-	cout << "Please enter your number: ";
-	cin >> pNum;
-	srand(time(0));
-	do
-	{
-		if(randMax - randMin == 2)
-		{
-			cNum = randMin + 1;
-		}
-		else
-		{
-			do
-			{
-				cNum = rand() % (randMax - randMin) + randMin + 1;
-			}
-			while((cNum <= randMin) || (cNum >= randMax));
-		}
-		guesses ++;
-		if(pNum == cNum)
-		{
-			cout << "The computers guess is: " << cNum << "\nThe computer guessed it in " << guesses << " guesses!" << endl;
-		}
-		else
-		{
-			cout << "The computers guess is: " << cNum << "\nWas the computers guess too high or low? (h/l)\n" << "Your choice: ";
-			cin >> pChoice;
-			if((pChoice == 'h') || (pChoice == 'H'))
-			{
-				randMax = cNum;
-			}
-			else if((pChoice == 'l') || (pChoice == 'L'))
-			{
-				randMin = cNum;
-			}
-			else if((pChoice == 'q') || (pChoice == 'Q'))
-			{
-				cNum = pNum;
-			}
-			else
-			{
-				cout << "That was not a choice!" << endl;
-				guesses --;
-			}
-		}
-	}
-	while(cNum != pNum);
-	cout << "Would you like to play again? (y/n)\n" << "Your choice: ";
-	cin >> cont;
-	if((cont == 'n') || (cont == 'N'))
-	{
-		done = true;
-	}
-}
-void computer()
-{
-	srand(time(0));
-	cNum = (rand() % (randMax - randMin)) + (randMin + 1);
-	do
-	{
-		cout << "Please enter your number: ";
-		cin >> pNum;
-		guesses ++;
-		if(pNum > cNum)
-		{
-			cout << "Your guess was too high!" << endl;
-		}
-		else if(pNum < cNum)
-		{
-			cout << "Your guess was too low!" << endl;
-		}
-		else if(pNum == cNum)
-		{
-			cout << "You guessed it in " << guesses << " guesses!" << endl;
-		}
-	}
-	while(pNum != cNum);
-	cout << "Would you like to play again? (y/n)\n" << "Your choice: ";
-	cin >> cont;
-	if((cont == 'n') || (cont == 'N'))
-	{
-		done = true;
-	}
-}
-void reset()
-{
-	guesses = 0;
-	randMin = RANDOM_MIN;
-	randMax = RANDOM_MAX;
 }
